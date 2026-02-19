@@ -55,9 +55,9 @@ excalidraw viewport --fit
 
 **Order**: zones/containers first → nodes one by one → arrows one by one → detail labels last.
 
-**Rule**: something must be on canvas within your first tool call. Still planning after 2 steps? Stop — draw the first shape now.
+**Rule**: your first tool call must be a draw command — no exceptions. Do not reason through the whole diagram before starting. Draw the first element, then think of the next one while it renders.
 
-**`excalidraw batch` is only for** tightly interdependent elements that must exist together (e.g. a set of arrows referencing shapes that don't exist yet). Everything else: one `create` at a time.
+**`excalidraw batch` is only for** tightly interdependent elements that must exist together. Everything else: one `create` at a time.
 
 ---
 

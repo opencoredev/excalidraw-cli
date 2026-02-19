@@ -5,16 +5,20 @@ description: Load when building or reviewing an Excalidraw diagram. Covers quick
 
 # Excalidraw Workflow
 
-## 1. Plan (60 seconds max — don't over-think)
+## 1. Start Immediately — Think On the Go
 
-Answer these before drawing anything:
+**Do not reason or plan before your first draw command.** The canvas is your thinking space — ideas come out as you draw, not before.
 
-- **What are the 3–7 main entities?** Name them and assign short IDs (`api-gw`, `db`, `svc-a`)
-- **What connects to what?** List the arrows mentally
-- **Layout direction?** Top-to-bottom (vertical flows) or left-to-right (horizontal pipelines)
-- **Any groups/zones?** Background containers that wrap related nodes
+- Pick a starting point (central node, first box, first idea) and draw it **now**
+- Think of the next idea **while the current element is being created**
+- Let the diagram grow organically — you don't need to know the full picture upfront
+- It's fine to add, move, or adjust as you go
 
-That's it. Start drawing. Refine as you go.
+**For brainstorming / mind maps**: start with the center node in your first tool call, then radiate outward idea by idea. Each branch will suggest the next one.
+
+**For architecture / flowcharts**: draw the first node you're sure about, then figure out what connects to it next.
+
+The only thing to decide before drawing: what's the very first element? Draw it. Everything else follows.
 
 ---
 
