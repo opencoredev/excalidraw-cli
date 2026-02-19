@@ -8,11 +8,10 @@
     "excalidraw": "src/cli.ts"
   },
   "scripts": {
-    "build": "bun run build:frontend && bun run build:server",
+    "test": "bun test",
+    "build": "bun run build:frontend",
     "build:frontend": "vite build",
-    "build:server": "bunx tsc",
-    "dev": "concurrently \"bun run dev:server\" \"vite\"",
-    "dev:server": "bunx tsc --watch",
+    "dev": "concurrently \"bun src/server.ts\" \"vite\"",
     "canvas": "bun src/server.ts",
     "type-check": "bunx tsc --noEmit"
   },
@@ -75,6 +74,7 @@
   "files": [
     "src/**/*",
     "skills/**/*",
+    "dist/frontend/**",
     "README.md",
     "LICENSE"
   ]

@@ -1007,7 +1007,7 @@ app.get('/', (req: Request, res: Response) => {
   res.sendFile(htmlFile, (err) => {
     if (err) {
       logger.error('Error serving frontend:', err);
-      res.status(404).send('Frontend not found. Please run "npm run build" first.');
+      res.status(404).send('Frontend not found. Run: bun run build:frontend');
     }
   });
 });

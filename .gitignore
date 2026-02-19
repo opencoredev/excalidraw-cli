@@ -1,8 +1,15 @@
 # Dependencies
 node_modules/
 
-# Build artifacts
-dist/
+# Build artifacts — compiled server output (not needed, Bun runs TS directly)
+dist/*.js
+dist/*.d.ts
+dist/*.js.map
+dist/*.d.ts.map
+dist/commands/
+dist/utils/
+# dist/frontend/ is intentionally NOT ignored — committed so `bun add -g` works out of the box
+
 public/dist/
 
 # Environment files
