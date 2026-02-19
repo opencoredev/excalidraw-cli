@@ -3,83 +3,57 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![GitHub Package](https://img.shields.io/badge/GitHub_Packages-@opencoredev%2Fexcalidraw--cli-blue)](https://github.com/opencoredev/excalidraw-cli/pkgs/npm/excalidraw-cli)
 
-Control a live Excalidraw canvas from AI agents — with a plain CLI and a loadable agent skill.
+Control a live Excalidraw canvas from AI agents using a plain CLI and a loadable agent skill.
 
-![Excalidraw CLI Demo](demo.gif)
-
-*AI agent creates a complete architecture diagram. [Watch on YouTube](https://youtu.be/ufW78Amq5qA)*
-
----
-
-## Why Not MCP?
-
-MCP (Model Context Protocol) is a popular way to give AI agents tools. But for something like Excalidraw, it has real problems:
-
-**Context bloat.** Every tool schema is injected into the context window on every single request — even when you're not drawing anything. A full MCP server with 20+ tools can consume thousands of tokens before the agent has done anything useful.
-
-**Always-on processes.** MCP servers are long-running daemons. You need to manage ports, handle crashes, deal with restarts, and configure clients to connect to them. It's infrastructure overhead for what is fundamentally a creative tool.
-
-**No selectivity.** All MCP tools are loaded all the time. You can't say "load the drawing tools only when the agent needs to draw." It's all-or-nothing.
-
-**The CLI + skill approach solves all three:**
-
-- **Zero context overhead when idle** — the agent skill is a markdown file that's loaded on-demand, only when the agent needs to draw. When you're not diagramming, it uses zero tokens.
-- **No server to manage for the agent interface** — the canvas server is a simple Express app the agent starts with one command. The CLI itself is stateless.
-- **Simple bash commands** — agents already know how to run shell commands. `excalidraw create --type rectangle --x 100 --y 100` is immediately understandable. No protocol, no schemas, no handshake.
-
-This is the same pattern Vercel and Expo use for their agent integrations: a CLI the agent runs + a skill file that explains how to use it.
-
----
-
-## How It Works
-
-Two components:
-
-**Canvas server** — an Express + WebSocket server that runs the Excalidraw UI and exposes a REST API. Agents start it once with `excalidraw serve`, open the URL in a browser, and watch the diagram build live.
-
-**`excalidraw` CLI** — a Bun-native CLI that agents use to talk to the canvas server. All commands output JSON. Works from any shell.
-
-```
-agent → excalidraw create --type rectangle ... → canvas server → live browser UI
-```
-
----
-
-## Quick Start
-
-### 1. Install
+## Install
 
 ```bash
-echo "@opencoredev:registry=https://npm.pkg.github.com" >> ~/.npmrc
+bun config set @opencoredev:registry https://npm.pkg.github.com
 bun add -g @opencoredev/excalidraw-cli
 ```
 
-### 2. Start the canvas
+## Quick Start
 
 ```bash
+# start the canvas server
 excalidraw serve
-```
 
-Open `http://localhost:3000` in your browser.
-
-### 3. Install the agent skill
-
-```bash
-npx skills add opencoredev/excalidraw-cli
-```
-
-This adds the `excalidraw` skill to your agent — a markdown guide with command reference, workflow patterns, and examples. Your agent loads it when it needs to draw, and ignores it otherwise.
-
-Optional design guide (color palettes, sizing rules, diagram templates):
-```bash
-npx skills add opencoredev/excalidraw-cli/excalidraw-design-guide
-```
-
-### 4. Check connection
-
-```bash
+# open http://localhost:3000 in your browser, then:
 excalidraw status
+excalidraw create --type rectangle --x 100 --y 100 --width 160 --height 60 --text "Hello"
 ```
+
+## Agent Skills
+
+Install the skill so your agent knows how to use the CLI:
+
+```bash
+bunx skills add opencoredev/excalidraw-cli
+```
+
+Optional design guide (colors, sizing, templates):
+
+```bash
+bunx skills add opencoredev/excalidraw-cli/excalidraw-design-guide
+```
+
+Skills are plain markdown files in [`skills/`](skills/) — loaded on demand, zero overhead when not in use.
+
+---
+
+## Why CLI + Skill Instead of MCP
+
+This project started as an MCP server ([yctimlin/mcp_excalidraw](https://github.com/yctimlin/mcp_excalidraw)). We rewrote it as a CLI + skill for three reasons:
+
+| | MCP | CLI + Skill |
+|---|---|---|
+| Context when idle | All tool schemas always loaded | Zero — skill is loaded on demand |
+| Process management | Daemon, ports, crashes to manage | Stateless CLI, nothing to babysit |
+| Agent compatibility | Depends on client MCP support | Any agent with bash access |
+
+> "A fairly standard set of MCP servers consumed over 20% of the context window before the agent even started working." — [EclipseSource, Jan 2026](https://eclipsesource.com/blogs/2026/01/14/the-mcp-hype-trap/)
+
+The canvas server still runs as a simple Express app. The difference is the agent interface — instead of a protocol with 40+ tool schemas permanently loaded into context, it's bash commands the agent runs when it needs them.
 
 ---
 
@@ -176,12 +150,12 @@ excalidraw guide                      # Print design guide as JSON
 
 ## Agent Skills
 
-| Skill | Install command | What it does |
-|-------|----------------|--------------|
-| `excalidraw` | `npx skills add opencoredev/excalidraw-cli` | Full workflow guide, command reference, diagram patterns |
-| `excalidraw-design-guide` | `npx skills add opencoredev/excalidraw-cli/excalidraw-design-guide` | Color palettes, sizing, anti-patterns, templates |
+| Skill | Install | What it does |
+|-------|---------|--------------|
+| `excalidraw` | `bunx skills add opencoredev/excalidraw-cli` | CLI workflow guide, command reference, diagram patterns |
+| `excalidraw-design-guide` | `bunx skills add opencoredev/excalidraw-cli/excalidraw-design-guide` | Color palettes, sizing, anti-patterns, templates |
 
-Skills live in [`skills/`](skills/) and are plain markdown — readable by humans, loadable by agents via [skills.sh](https://skills.sh).
+Skills live in [`skills/`](skills/) — plain markdown, installable via [skills.sh](https://skills.sh).
 
 ---
 
