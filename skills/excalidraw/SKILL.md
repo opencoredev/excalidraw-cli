@@ -61,20 +61,38 @@ excalidraw viewport --fit
 
 ---
 
-## Quality Gate (MANDATORY before adding more elements)
+## Inline Self-Check (do this mentally before EVERY element)
 
-After EVERY batch of elements, run a quality check:
+Before issuing each `excalidraw create`, ask yourself:
 
-1. `excalidraw describe` — verify all expected elements are present with correct IDs
-2. `excalidraw screenshot --out /tmp/canvas.png` — visually inspect (requires browser)
-3. **Check for**: text truncation, overlapping elements, arrow crossings, cramped spacing
-4. **Fix before proceeding** — never say "looks good" without verifying
+1. **Will the text fit?** Count characters in the label. Apply: `width = max(160, charCount * 11 + 40)`. When in doubt, go wider — truncation looks worse than a wide box.
+2. **Am I drawing shapes before arrows?** Arrows must always be created AFTER both their source and target shapes exist. Never draw an arrow to a shape that doesn't exist yet — it won't bind and will float or overdraw.
+3. **Is there enough gap?** At least 60px between adjacent shapes, 80px between tiers. Cramped = arrows cross through boxes.
+
+**Fix it now, not later.** If you realize a shape is too narrow after creating it, `excalidraw update <id> --width <wider>` immediately before moving on.
 
 ### Sizing formula
-- Shape width: `max(160, labelTextLength * 9)` pixels
+- Shape width: `max(160, charCount * 11 + 40)` pixels — the `+40` is mandatory padding, never skip it
+- Multi-word labels: measure the longest single word, not total chars: `max(160, longestWord * 11 + 80)`
 - Shape height: 60px single-line, 80px two-line, 100px three-line
-- Background zones: 50px padding on all sides around contained elements
-- Arrow minimum: 80px between shapes
+- Background zones: 60px padding on all sides around contained elements (not 50)
+- Arrow minimum gap: 80px between shapes — if shapes are closer, arrows will overdraw the border
+
+### Arrow binding rules (prevents overline)
+- **Always use `--start <id> --end <id>`** — never use raw coordinates to connect shapes
+- **Create shapes first, arrows second** — every time, no exceptions
+- If an arrow appears to pass through a box, the shape was too close or the arrow wasn't bound: delete and recreate with proper `--start`/`--end`
+
+## Quality Gate (only if something looks off)
+
+If you suspect a problem after a section of elements:
+
+```bash
+excalidraw describe   # spot-check element list and IDs
+excalidraw viewport --fit
+```
+
+Don't run this after every single element — just when something feels wrong.
 
 ---
 

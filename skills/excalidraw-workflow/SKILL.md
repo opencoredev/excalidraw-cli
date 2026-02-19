@@ -57,25 +57,25 @@ excalidraw viewport --fit
 
 ---
 
-## 3. Review Before Finishing
+## 3. Fix As You Go — Don't Save It For the End
 
-Run this checklist before calling the diagram done:
+Catch issues inline, right when you create each element. That's the cheapest time to fix them.
 
+**Before every `excalidraw create`:**
+- Is the width big enough? Use `max(160, charCount * 11 + 40)`. When unsure, go wider.
+- For multi-word labels: `max(160, longestWord * 11 + 80)` — measure the longest word, not total length.
+- Is the shape already drawn before you draw an arrow to it? If not, draw the shape first.
+- Is there 60px+ gap between this shape and its neighbors?
+
+**If something is wrong, fix it immediately:**
 ```bash
-excalidraw describe        # All expected elements present? IDs correct?
-excalidraw viewport --fit  # Nothing cut off at the edges?
-```
-
-Check manually:
-- [ ] **Overlap** — do any shapes overlap? Fix with updated x/y
-- [ ] **Text truncation** — shape width >= `textLength * 9`? If not, widen
-- [ ] **Arrow binding** — arrows connected to shapes, not floating in space?
-- [ ] **Color consistency** — same-role shapes use the same stroke/fill?
-- [ ] **Spacing** — at least 40px between adjacent shapes, 60px between tiers?
-
-If anything looks off:
-```bash
-excalidraw update <id> --width 200   # Fix truncated text
-excalidraw update <id> --x 300 --y 180  # Fix overlapping position
+excalidraw update <id> --width 220   # text was truncating
+excalidraw update <id> --x 320 --y 180  # overlapping another shape
 excalidraw viewport --fit
 ```
+
+**Arrow overline fix** — if an arrow passes through a box instead of stopping at the border:
+- The shapes were probably too close, or the arrow wasn't bound with `--start`/`--end`
+- Delete the arrow, increase the gap between shapes, recreate with `--start <id> --end <id>`
+
+Only run `excalidraw describe` if you think something got lost or an ID is wrong — not after every element.
