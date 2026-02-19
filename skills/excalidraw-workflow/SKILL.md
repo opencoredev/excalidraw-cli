@@ -26,36 +26,38 @@ That's it. Start drawing. Refine as you go.
 
 ---
 
-## 2. Build Progressively — User Sees Live Progress
+## 2. Draw Element by Element — User Can Steer in Real Time
 
-Split every diagram into stages. Run `excalidraw viewport --fit` after each one so the user sees the canvas building in real time.
+**Do not batch everything at once.** Create each element with its own `excalidraw create` call so the user sees every shape appear live and can redirect if something looks wrong.
 
-**Stage 1 — Structure** (draw first, always)
-Background zones, swimlane containers, bounding rectangles. These set the visual skeleton.
+**Order to follow:**
+1. Background zones / containers first (sets the skeleton)
+2. Primary nodes one by one (main shapes)
+3. Arrows one by one after their shapes exist
+4. Detail labels / annotations last
+
+**Example — element by element:**
 ```bash
-excalidraw batch stage1.json && excalidraw viewport --fit
+# Zone first
+excalidraw create --type rectangle --id zone-backend --x 40 --y 40 --width 500 --height 400 --fill "#e9ecef" --stroke-color "#868e96" --opacity 40
+excalidraw viewport --fit
+
+# Nodes one at a time
+excalidraw create --type rectangle --id api-gw --x 80 --y 100 --width 160 --height 60 --text "API Gateway" --stroke-color "#9c36b5" --fill "#eebefa"
+excalidraw viewport --fit
+
+excalidraw create --type rectangle --id db --x 80 --y 260 --width 160 --height 60 --text "Database" --stroke-color "#0c8599" --fill "#99e9f2"
+excalidraw viewport --fit
+
+# Arrows after shapes exist
+excalidraw create --type arrow --x 0 --y 0 --start api-gw --end db
+excalidraw viewport --fit
 ```
 
-**Stage 2 — Primary nodes**
-The main shapes — services, decisions, databases, actors.
-```bash
-excalidraw batch stage2.json && excalidraw viewport --fit
-```
-
-**Stage 3 — Connections**
-All arrows. Use `"start": {"id": "..."}` / `"end": {"id": "..."}` — never raw coordinates.
-```bash
-excalidraw batch stage3.json
-```
-
-**Stage 4 — Details** (optional)
-Secondary labels, annotations, legends, helper text.
-```bash
-excalidraw batch stage4.json && excalidraw viewport --fit
-```
-
-> **Rule**: something must appear on canvas within your first 1–2 tool calls.
-> If you haven't drawn anything yet, stop planning and start with Stage 1.
+> **Rule**: something must appear on canvas within your first tool call.
+> If you are still planning after 2 steps, stop — draw the first shape now.
+>
+> **Only use `excalidraw batch`** when elements are tightly interdependent (e.g. a group of arrows that only make sense together). For everything else, create one at a time.
 
 ---
 

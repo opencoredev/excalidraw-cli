@@ -47,20 +47,27 @@ All commands respect `EXCALIDRAW_URL`. Override per-command with `--url <url>`.
 
 ---
 
-## ⚡ Progressive Drawing — Start Immediately, Don't Make the User Wait
+## ⚡ Draw Element by Element — Don't Make the User Wait
 
-**Never** plan everything silently then send one giant batch. The user sees a blank canvas until you're done — that's a bad experience.
+**Never batch everything into one command.** Create each element individually so the user sees every shape appear on canvas and can redirect if something is wrong.
 
-Draw in stages. After each stage, fit the viewport so the user sees live progress:
+```bash
+# Each element is its own call — user sees it appear immediately
+excalidraw create --type rectangle --id svc-a --x 100 --y 100 --width 160 --height 60 --text "Service A"
+excalidraw viewport --fit
 
-| Stage | What | Command |
-|-------|------|---------|
-| 1 | Background zones / containers | `excalidraw batch stage1.json && excalidraw viewport --fit` |
-| 2 | Primary nodes (main shapes) | `excalidraw batch stage2.json && excalidraw viewport --fit` |
-| 3 | Arrows / connections | `excalidraw batch stage3.json` |
-| 4 | Labels, annotations, fine details | `excalidraw batch stage4.json` |
+excalidraw create --type rectangle --id svc-b --x 100 --y 240 --width 160 --height 60 --text "Service B"
+excalidraw viewport --fit
 
-**Rule**: something must appear on canvas within your first 1-2 tool calls. If you haven't drawn anything yet, stop planning and start drawing.
+excalidraw create --type arrow --x 0 --y 0 --start svc-a --end svc-b
+excalidraw viewport --fit
+```
+
+**Order**: zones/containers first → nodes one by one → arrows one by one → detail labels last.
+
+**Rule**: something must be on canvas within your first tool call. Still planning after 2 steps? Stop — draw the first shape now.
+
+**`excalidraw batch` is only for** tightly interdependent elements that must exist together (e.g. a set of arrows referencing shapes that don't exist yet). Everything else: one `create` at a time.
 
 ---
 
