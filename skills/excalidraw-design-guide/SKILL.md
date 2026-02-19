@@ -1,11 +1,14 @@
 ---
 name: excalidraw-design-guide
 description: >
-  Comprehensive design guide for creating beautiful Excalidraw diagrams.
-  Covers color palettes, sizing rules, layout patterns, arrow binding best practices,
-  diagram type templates (architecture, flowchart, ER), and anti-patterns to avoid.
-  Load this skill when you want AI-generated diagrams to look professional.
-  Pairs with the `excalidraw` skill (CLI-based canvas control).
+  ALWAYS load this skill when drawing any Excalidraw diagram — architecture, flowchart,
+  sequence, ER, mind map, or any other type. Provides the color palette (hex codes for
+  stroke and fill), sizing formulas to prevent text truncation, spacing rules to prevent
+  overlaps, arrow style conventions, layout tier patterns, diagram templates, and 10
+  anti-patterns that make diagrams look bad. Without this skill, agents pick wrong colors,
+  make shapes too small, and produce cramped unreadable diagrams.
+  Trigger phrases: "draw a diagram", "create a diagram", "visualize", "architecture diagram",
+  "flowchart", "make an Excalidraw", "diagram this", "map out", "draw the flow".
 ---
 
 # Excalidraw Diagram Design Guide
