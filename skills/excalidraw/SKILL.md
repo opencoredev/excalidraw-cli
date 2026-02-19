@@ -9,9 +9,7 @@ description: >
   (8) convert Mermaid diagrams to Excalidraw elements,
   (9) share diagrams as encrypted excalidraw.com URLs.
   Requires a running canvas server (default http://localhost:3000).
-  IMPORTANT: Always load `excalidraw-design-guide` alongside this skill before drawing any diagram.
-  For sequence/flow diagrams also load `excalidraw-sequence`.
-  For tree/hierarchy/org-chart diagrams also load `excalidraw-mindmap`.
+  IMPORTANT: Always load `excalidraw-design-guide` and `excalidraw-workflow` alongside this skill before drawing any diagram.
 ---
 
 # Excalidraw Skill
@@ -21,8 +19,7 @@ description: >
 ### ⚠️ Load companion skills before drawing
 Before creating any diagram, load these skills:
 - **Always**: `excalidraw-design-guide` — colors, sizing, spacing, anti-patterns
-- **For sequence/API/flow diagrams**: `excalidraw-sequence`
-- **For trees, org charts, hierarchies, mind maps**: `excalidraw-mindmap`
+- **Always**: `excalidraw-workflow` — planning, progressive drawing, review checklist
 
 ### Check if canvas is running
 ```bash
@@ -46,6 +43,23 @@ bun add -g github:opencoredev/excalidraw-cli
 export EXCALIDRAW_URL=http://localhost:3000
 ```
 All commands respect `EXCALIDRAW_URL`. Override per-command with `--url <url>`.
+
+---
+
+## ⚡ Progressive Drawing — Start Immediately, Don't Make the User Wait
+
+**Never** plan everything silently then send one giant batch. The user sees a blank canvas until you're done — that's a bad experience.
+
+Draw in stages. After each stage, fit the viewport so the user sees live progress:
+
+| Stage | What | Command |
+|-------|------|---------|
+| 1 | Background zones / containers | `excalidraw batch stage1.json && excalidraw viewport --fit` |
+| 2 | Primary nodes (main shapes) | `excalidraw batch stage2.json && excalidraw viewport --fit` |
+| 3 | Arrows / connections | `excalidraw batch stage3.json` |
+| 4 | Labels, annotations, fine details | `excalidraw batch stage4.json` |
+
+**Rule**: something must appear on canvas within your first 1-2 tool calls. If you haven't drawn anything yet, stop planning and start drawing.
 
 ---
 
