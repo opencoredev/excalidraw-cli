@@ -29,13 +29,8 @@ Open `http://localhost:3000` in a browser (required for screenshot/image export)
 
 ### Install CLI (one-time, from GitHub Packages)
 ```bash
-echo "@yctimlin:registry=https://npm.pkg.github.com" >> ~/.npmrc
-bun add -g @yctimlin/excalidraw-cli
-```
-
-Or use without installing:
-```bash
-EXCALIDRAW_URL=http://localhost:3000 bunx @yctimlin/excalidraw-cli status
+bun config set @opencoredev:registry https://npm.pkg.github.com
+bun add -g @opencoredev/excalidraw-cli
 ```
 
 ### Global URL override
