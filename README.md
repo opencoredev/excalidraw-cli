@@ -51,9 +51,11 @@ This project started as an MCP server ([yctimlin/mcp_excalidraw](https://github.
 | Process management | Daemon, ports, crashes to manage | Stateless CLI, nothing to babysit |
 | Agent compatibility | Depends on client MCP support | Any agent with bash access |
 
-The context cost is real and measured. The Playwright MCP server alone consumes **22.2% of Claude's 200K context window** just to expose its tool list — before your agent has done a single thing ([demiliani.com, Sep 2025](https://demiliani.com/2025/09/04/model-context-protocol-and-the-too-many-tools-problem/)). A standard set of three MCP servers — Playwright, GitHub, and an IDE integration — can eat **over 20% of the context window** before work begins ([EclipseSource, Jan 2026](https://eclipsesource.com/blogs/2026/01/22/mcp-context-overload/)). The token bloat problem is significant enough that Huawei engineers filed a formal enhancement proposal against the MCP spec itself to address it ([modelcontextprotocol/modelcontextprotocol#1576](https://github.com/modelcontextprotocol/modelcontextprotocol/issues/1576)).
+> "Adding just the popular GitHub MCP defines 93 additional tools and swallows another 55,000 of those valuable tokens. Existing CLI tools gain all of that functionality for a token cost close to zero — because every frontier LLM knows how to use them already." — Simon Willison, [simonwillison.net, Aug 2025](https://simonwillison.net/2025/Aug/22/too-many-mcps/)
 
-The canvas server still runs as a simple Express app. The difference is the agent interface — instead of 40+ tool schemas loaded into context on every request, it's bash commands the agent runs when it needs them, guided by a skill file it loads on demand.
+The numbers back it up: the Playwright MCP server alone eats **22.2% of Claude's 200K context window** just to list its tools ([demiliani.com](https://demiliani.com/2025/09/04/model-context-protocol-and-the-too-many-tools-problem/)). Three MCP servers together consume **over 20%** before any work starts ([EclipseSource](https://eclipsesource.com/blogs/2026/01/22/mcp-context-overload/)). The problem is acknowledged at the protocol level — Huawei engineers filed a formal spec proposal to fix it in the MCP repo itself ([#1576](https://github.com/modelcontextprotocol/modelcontextprotocol/issues/1576)).
+
+The canvas server still runs as a simple Express app. The difference is the agent interface — instead of tool schemas loaded into context on every request, it's bash commands the agent runs when needed, guided by a skill file it loads on demand.
 
 ---
 
