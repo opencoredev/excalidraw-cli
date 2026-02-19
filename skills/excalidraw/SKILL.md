@@ -27,10 +27,9 @@ excalidraw serve --port 3000
 ```
 Open `http://localhost:3000` in a browser (required for screenshot/image export).
 
-### Install CLI (one-time, from GitHub Packages)
+### Install CLI (one-time)
 ```bash
-bun config set @opencoredev:registry https://npm.pkg.github.com
-bun add -g @opencoredev/excalidraw-cli
+bun add -g github:opencoredev/excalidraw-cli
 ```
 
 ### Global URL override

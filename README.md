@@ -8,8 +8,7 @@ Control a live Excalidraw canvas from AI agents using a plain CLI and a loadable
 ## Install
 
 ```bash
-bun config set @opencoredev:registry https://npm.pkg.github.com
-bun add -g @opencoredev/excalidraw-cli
+bun add -g github:opencoredev/excalidraw-cli
 ```
 
 ## Quick Start
