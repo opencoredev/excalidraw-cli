@@ -24,18 +24,30 @@ excalidraw create --type rectangle --x 100 --y 100 --width 160 --height 60 --tex
 
 ## Agent Skills
 
-| Skill | What it's for | Install |
-|-------|--------------|---------|
-| `excalidraw` | CLI commands, how to use the canvas | `bunx skills add opencoredev/excalidraw-cli/excalidraw` |
-| `excalidraw-design-guide` | Colors, sizing, layout, anti-patterns | `bunx skills add opencoredev/excalidraw-cli/excalidraw-design-guide` |
-| `excalidraw-workflow` | Planning, progressive drawing, review | `bunx skills add opencoredev/excalidraw-cli/excalidraw-workflow` |
+| Skill | What it's for |
+|-------|--------------|
+| `excalidraw` | CLI commands, how to use the canvas |
+| `excalidraw-design-guide` | Colors, sizing, layout, anti-patterns |
+| `excalidraw-workflow` | Planning, element-by-element drawing, review |
 
-To update all skills to the latest version, just re-run the install commands — they overwrite in place:
+Install all three:
 
 ```bash
-bunx skills add opencoredev/excalidraw-cli/excalidraw
-bunx skills add opencoredev/excalidraw-cli/excalidraw-design-guide
-bunx skills add opencoredev/excalidraw-cli/excalidraw-workflow
+bunx skills add opencoredev/excalidraw-cli
+```
+
+Or install individually:
+
+```bash
+bunx skills add opencoredev/excalidraw-cli --skill excalidraw
+bunx skills add opencoredev/excalidraw-cli --skill excalidraw-design-guide
+bunx skills add opencoredev/excalidraw-cli --skill excalidraw-workflow
+```
+
+To update, just re-run — it overwrites in place:
+
+```bash
+bunx skills update
 ```
 
 Skills are plain markdown files in [`skills/`](skills/) — loaded by your agent on demand, zero overhead when not in use.

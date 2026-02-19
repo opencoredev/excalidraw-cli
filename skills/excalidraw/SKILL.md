@@ -1,16 +1,6 @@
 ---
 name: excalidraw
-description: >
-  Control a live Excalidraw canvas via the `excalidraw` CLI. Use when an agent needs to
-  (1) draw or lay out diagrams on a live canvas, (2) create/update/delete individual elements,
-  (3) batch-create complex diagrams from JSON, (4) inspect the canvas with describe or screenshot,
-  (5) export/import .excalidraw files, PNG, or SVG, (6) save/restore canvas snapshots,
-  (7) align, distribute, group, lock, or duplicate elements,
-  (8) convert Mermaid diagrams to Excalidraw elements,
-  (9) share diagrams as encrypted excalidraw.com URLs.
-  Requires a running canvas server (default http://localhost:3000).
-  Load `excalidraw-design-guide` when creating or styling any diagram (colors, sizing, layout).
-  Load `excalidraw-workflow` when building a multi-element diagram or reviewing/iterating on one.
+description: Control a live Excalidraw canvas via the excalidraw CLI. Use when drawing diagrams, creating or editing elements, exporting scenes, controlling viewport, or converting Mermaid diagrams. Load excalidraw-design-guide when creating or styling any diagram. Load excalidraw-workflow when building or reviewing a multi-element diagram.
 ---
 
 # Excalidraw Skill

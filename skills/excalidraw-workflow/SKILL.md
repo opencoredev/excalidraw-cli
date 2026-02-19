@@ -1,14 +1,6 @@
 ---
 name: excalidraw-workflow
-description: >
-  Load when starting, building, or reviewing any Excalidraw diagram.
-  Covers quick pre-draw planning (what to decide before touching the CLI),
-  progressive build order so the user sees live canvas updates instead of waiting,
-  and a review checklist to catch issues before calling a diagram done.
-  Trigger phrases: "draw a diagram", "create a diagram", "make a chart", "visualize this",
-  "check the diagram", "review the diagram", "fix the layout", "does this look right",
-  "improve the diagram", "the diagram looks wrong", "iterate on this".
-  Always load alongside `excalidraw` and `excalidraw-design-guide`.
+description: Load when building or reviewing an Excalidraw diagram. Covers quick planning before drawing, element-by-element build order so the user sees live progress, and a review checklist to catch overlaps, truncated text, and unconnected arrows before finishing.
 ---
 
 # Excalidraw Workflow

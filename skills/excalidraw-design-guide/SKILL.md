@@ -1,14 +1,6 @@
 ---
 name: excalidraw-design-guide
-description: >
-  ALWAYS load this skill when drawing any Excalidraw diagram — architecture, flowchart,
-  sequence, ER, mind map, or any other type. Provides the color palette (hex codes for
-  stroke and fill), sizing formulas to prevent text truncation, spacing rules to prevent
-  overlaps, arrow style conventions, layout tier patterns, diagram templates, and 10
-  anti-patterns that make diagrams look bad. Without this skill, agents pick wrong colors,
-  make shapes too small, and produce cramped unreadable diagrams.
-  Trigger phrases: "draw a diagram", "create a diagram", "visualize", "architecture diagram",
-  "flowchart", "make an Excalidraw", "diagram this", "map out", "draw the flow".
+description: Load when drawing any Excalidraw diagram. Provides color palette (hex codes), sizing formulas to prevent text truncation, spacing rules to prevent overlaps, arrow styles, layout patterns, and diagram templates for architecture, flowchart, and ER diagrams. Use when asked to draw, visualize, diagram, or create any chart.
 ---
 
 # Excalidraw Diagram Design Guide
