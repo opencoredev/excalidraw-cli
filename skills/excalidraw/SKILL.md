@@ -9,17 +9,18 @@ description: >
   (8) convert Mermaid diagrams to Excalidraw elements,
   (9) share diagrams as encrypted excalidraw.com URLs.
   Requires a running canvas server (default http://localhost:3000).
-  IMPORTANT: Always load `excalidraw-design-guide` and `excalidraw-workflow` alongside this skill before drawing any diagram.
+  Load `excalidraw-design-guide` when creating or styling any diagram (colors, sizing, layout).
+  Load `excalidraw-workflow` when building a multi-element diagram or reviewing/iterating on one.
 ---
 
 # Excalidraw Skill
 
 ## Step 0: Setup
 
-### ⚠️ Load companion skills before drawing
-Before creating any diagram, load these skills:
-- **Always**: `excalidraw-design-guide` — colors, sizing, spacing, anti-patterns
-- **Always**: `excalidraw-workflow` — planning, progressive drawing, review checklist
+### Load companion skills when needed
+- **Drawing or styling a diagram** → load `excalidraw-design-guide` (colors, sizing, anti-patterns)
+- **Building a multi-element diagram or reviewing one** → load `excalidraw-workflow` (planning, progressive drawing, review checklist)
+- **Just checking status, exporting, or running a single command** → no companion skills needed
 
 ### Check if canvas is running
 ```bash

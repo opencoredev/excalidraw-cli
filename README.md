@@ -24,19 +24,21 @@ excalidraw create --type rectangle --x 100 --y 100 --width 160 --height 60 --tex
 
 ## Agent Skills
 
-Install the skill so your agent knows how to use the CLI:
+| Skill | What it's for | Install |
+|-------|--------------|---------|
+| `excalidraw` | CLI commands, how to use the canvas | `bunx skills add opencoredev/excalidraw-cli/excalidraw` |
+| `excalidraw-design-guide` | Colors, sizing, layout, anti-patterns | `bunx skills add opencoredev/excalidraw-cli/excalidraw-design-guide` |
+| `excalidraw-workflow` | Planning, progressive drawing, review | `bunx skills add opencoredev/excalidraw-cli/excalidraw-workflow` |
+
+To update all skills to the latest version, just re-run the install commands — they overwrite in place:
 
 ```bash
-bunx skills add opencoredev/excalidraw-cli
-```
-
-Optional design guide (colors, sizing, templates):
-
-```bash
+bunx skills add opencoredev/excalidraw-cli/excalidraw
 bunx skills add opencoredev/excalidraw-cli/excalidraw-design-guide
+bunx skills add opencoredev/excalidraw-cli/excalidraw-workflow
 ```
 
-Skills are plain markdown files in [`skills/`](skills/) — loaded on demand, zero overhead when not in use.
+Skills are plain markdown files in [`skills/`](skills/) — loaded by your agent on demand, zero overhead when not in use.
 
 ---
 
