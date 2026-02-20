@@ -192,6 +192,7 @@ app.post('/api/elements', (req: Request, res: Response) => {
       version: 1
     };
 
+    resolveArrowBindings([element]);
     elements.set(id, element);
     
     // Broadcast to all connected clients

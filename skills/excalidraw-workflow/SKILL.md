@@ -5,77 +5,118 @@ description: Load when building or reviewing an Excalidraw diagram. Covers quick
 
 # Excalidraw Workflow
 
-## 1. Start Immediately — Think On the Go
+## 1. Quick Grid Plan (30 seconds, saves minutes)
 
-**Do not reason or plan before your first draw command.** The canvas is your thinking space — ideas come out as you draw, not before.
+Before the first draw command, decide your coordinate grid. This prevents overlaps and misaligned arrows that are painful to fix mid-diagram.
 
-- Pick a starting point (central node, first box, first idea) and draw it **now**
-- Think of the next idea **while the current element is being created**
-- Let the diagram grow organically — you don't need to know the full picture upfront
-- It's fine to add, move, or adjust as you go
+**For architecture / flowcharts** — sketch this mentally:
+```
+Tier 1 (y=60):   Client / Entry points      (x=80, 320, 560 ...)
+Tier 2 (y=200):  Gateway / Edge             (x=80, 320, 560 ...)
+Tier 3 (y=340):  Services                   (x=80, 320, 560 ...)
+Tier 4 (y=480):  Data stores                (x=80, 320, 560 ...)
+```
+Rule of thumb: 140px vertical between tiers, 240px horizontal between columns.
 
-**For brainstorming / mind maps**: start with the center node in your first tool call, then radiate outward idea by idea. Each branch will suggest the next one.
+**For mind maps / brainstorming**: start with the center node, then radiate. Plan nothing — the structure emerges as you draw.
 
-**For architecture / flowcharts**: draw the first node you're sure about, then figure out what connects to it next.
-
-The only thing to decide before drawing: what's the very first element? Draw it. Everything else follows.
+**Only one thing to decide before drawing**: what is the first element and where does it go? Draw it immediately.
 
 ---
 
 ## 2. Draw Element by Element — User Can Steer in Real Time
 
-**Do not batch everything at once.** Create each element with its own `excalidraw create` call so the user sees every shape appear live and can redirect if something looks wrong.
+Create each element with its own `excalidraw create` call so the user sees every shape appear live and can redirect if something looks wrong.
 
-**Order to follow:**
-1. Background zones / containers first (sets the skeleton)
+**Order:**
+1. Background zones / containers (sets the skeleton)
 2. Primary nodes one by one (main shapes)
-3. Arrows one by one after their shapes exist
+3. Arrows one by one — only after both source and target exist
 4. Detail labels / annotations last
 
 **Example — element by element:**
 ```bash
-# Zone first
-excalidraw create --type rectangle --id zone-backend --x 40 --y 40 --width 500 --height 400 --fill "#e9ecef" --stroke-color "#868e96" --opacity 40
+excalidraw create --type rectangle --id zone-backend --x 40 --y 40 --width 500 --height 400 \
+  --fill "#e9ecef" --stroke-color "#868e96" --opacity 40
 excalidraw viewport --fit
 
-# Nodes one at a time
-excalidraw create --type rectangle --id api-gw --x 80 --y 100 --width 160 --height 60 --text "API Gateway" --stroke-color "#9c36b5" --fill "#eebefa"
+excalidraw create --type rectangle --id api-gw --x 80 --y 100 --width 200 --height 60 \
+  --text "API Gateway" --stroke-color "#9c36b5" --fill "#eebefa"
 excalidraw viewport --fit
 
-excalidraw create --type rectangle --id db --x 80 --y 260 --width 160 --height 60 --text "Database" --stroke-color "#0c8599" --fill "#99e9f2"
+excalidraw create --type rectangle --id db --x 80 --y 260 --width 200 --height 60 \
+  --text "Database" --stroke-color "#0c8599" --fill "#99e9f2"
 excalidraw viewport --fit
 
-# Arrows after shapes exist
 excalidraw create --type arrow --x 0 --y 0 --start api-gw --end db
 excalidraw viewport --fit
 ```
 
 > **Rule**: something must appear on canvas within your first tool call.
-> If you are still planning after 2 steps, stop — draw the first shape now.
 >
-> **Only use `excalidraw batch`** when elements are tightly interdependent (e.g. a group of arrows that only make sense together). For everything else, create one at a time.
+> **`excalidraw batch` is best** when you have a complete diagram ready — arrow bindings are computed across the whole set at once, giving better geometry. For live incremental drawing, use individual `create` calls.
 
 ---
 
 ## 3. Fix As You Go — Don't Save It For the End
 
-Catch issues inline, right when you create each element. That's the cheapest time to fix them.
-
 **Before every `excalidraw create`:**
-- Is the width big enough? Use `max(160, charCount * 11 + 40)`. When unsure, go wider.
-- For multi-word labels: `max(160, longestWord * 11 + 80)` — measure the longest word, not total length.
-- Is the shape already drawn before you draw an arrow to it? If not, draw the shape first.
-- Is there 60px+ gap between this shape and its neighbors?
+- Width big enough? `max(160, charCount * 11 + 40)`. Go wider when unsure.
+- Multi-word labels: `max(160, longestWord * 11 + 80)`.
+- Both shapes exist before drawing the arrow?
+- At least 60px gap between this shape and its neighbors?
 
-**If something is wrong, fix it immediately:**
+**Fix immediately:**
 ```bash
-excalidraw update <id> --width 220   # text was truncating
-excalidraw update <id> --x 320 --y 180  # overlapping another shape
+excalidraw update <id> --width 220         # text truncating
+excalidraw update <id> --x 320 --y 180    # overlapping neighbor
 excalidraw viewport --fit
 ```
 
-**Arrow overline fix** — if an arrow passes through a box instead of stopping at the border:
-- The shapes were probably too close, or the arrow wasn't bound with `--start`/`--end`
-- Delete the arrow, increase the gap between shapes, recreate with `--start <id> --end <id>`
+**Arrow passes through a box?** Shapes were too close, or arrow wasn't bound. Delete it, increase gap, recreate with `--start <id> --end <id>`.
+
+**Overlapping elements?** Use `excalidraw distribute` to space them evenly.
 
 Only run `excalidraw describe` if you think something got lost or an ID is wrong — not after every element.
+
+---
+
+## 4. Review Before Finishing
+
+Run this before calling the diagram done:
+
+```bash
+excalidraw describe
+```
+Check:
+- [ ] Every shape has a label
+- [ ] Every arrow connects two shapes (not floating)
+- [ ] No element IDs are duplicated
+- [ ] Text isn't truncated (shapes wide enough)
+
+```bash
+excalidraw viewport --fit
+excalidraw screenshot --out /tmp/final.png
+```
+Visual check — look for:
+- [ ] No overlapping shapes
+- [ ] Arrow lines don't pass through boxes
+- [ ] Consistent color/sizing within each tier
+
+**Save before stopping:**
+```bash
+excalidraw export --out backup.excalidraw
+```
+Canvas state and snapshots are both in-memory — lost on server restart.
+
+---
+
+## Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| `503 No frontend client connected` | Open `http://localhost:3000` in a browser. `viewport`, `screenshot`, and `mermaid` require a live browser tab. |
+| Arrow not connecting | Use `--start <id> --end <id>` — both shapes must exist before creating the arrow |
+| Elements scattered / overlapping | Run `excalidraw distribute id1 id2 id3 --direction vertical` to space evenly |
+| Elements lost after restart | Run `excalidraw export --out backup.excalidraw` before stopping the server |
+| Fill looks sketchy/hatched | Add `--fill` color with `"fillStyle": "solid"` in batch JSON |

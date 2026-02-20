@@ -36,11 +36,12 @@ description: Load when drawing any Excalidraw diagram. Provides color palette (h
 ## Sizing Rules
 
 - **Minimum shape**: width >= 120px, height >= 60px
-- **Shape width formula**: `max(160, labelTextLength * 9)` — prevents text truncation
+- **Shape width formula**: `max(160, charCount * 11 + 40)` — the `+40` is mandatory padding, never skip it
+- **Multi-word labels**: measure the longest single word: `max(160, longestWord * 11 + 80)`
 - **Shape height**: 60px single-line, 80px two-line, 100px three-line labels
 - **Font sizes**: body text >= 16, titles/headers >= 20, small labels >= 14
 - **Padding**: at least 20px inside shapes for text breathing room
-- **Arrow length**: minimum 80px between connected shapes
+- **Arrow gap**: minimum 80px between connected shapes — closer = arrows overdraw the border
 - **Consistent sizing**: same-role shapes = same dimensions
 
 ---
@@ -76,14 +77,27 @@ Server auto-routes arrows to element edges using precise geometry.
 
 ### Arrowheads
 - `"endArrowhead": "arrow"` — default directed flow
-- `"endArrowhead": "dot"` — data stores
+- `"endArrowhead": "dot"` — data stores / database relationships
+- `"endArrowhead": "bar"` — cardinality (ER diagrams)
+- `"endArrowhead": "triangle"` — filled triangle (UML)
 - `"endArrowhead": null` — plain line (undirected)
+- `"startArrowhead"` mirrors the same options for bidirectional arrows
 
 ### Labels on arrows
 Use `"label": {"text": "HTTP"}` — keep to 1–2 words. Long labels overlap shapes.
 
 ### Routing complex arrows (avoid crossings)
-**Curved arrow** (arc over elements):
+**Elbowed arrow** (right-angle routing — cleanest for architecture diagrams):
+```json
+{
+  "type": "arrow", "x": 0, "y": 0,
+  "start": {"id": "svc-a"},
+  "end": {"id": "svc-b"},
+  "elbowed": true
+}
+```
+
+**Curved arc** (for arrows that need to arc over elements):
 ```json
 {
   "type": "arrow", "x": 100, "y": 100,
@@ -93,14 +107,38 @@ Use `"label": {"text": "HTTP"}` — keep to 1–2 words. Long labels overlap sha
 }
 ```
 
-**Elbowed arrow** (L-shape, right-angle routing):
+---
+
+## Fill Styles (`fillStyle`)
+
+Controls how shape interiors are rendered. Default is `"hachure"` (Excalidraw's signature sketchy look).
+
+| Value | Appearance | Best for |
+|-------|-----------|----------|
+| `"solid"` | Flat solid color | Clean production diagrams |
+| `"hachure"` | Diagonal hatching (default) | Sketchy/hand-drawn style |
+| `"cross-hatch"` | Grid hatching | Emphasis, dense areas |
+| `"dots"` | Dot pattern | Light texture, secondary elements |
+| `"zigzag"` | Zigzag lines | Decorative, callouts |
+| `"zigzag-line"` | Single zigzag | Borders/edges |
+
+**Use `"solid"` for any diagram meant to look professional.** Only use `"hachure"` if you want the hand-drawn aesthetic intentionally.
+
 ```json
-{
-  "type": "arrow", "x": 100, "y": 100,
-  "points": [[0,0],[0,-50],[200,-50],[200,0]],
-  "elbowed": true
-}
+{"type": "rectangle", "fillStyle": "solid", "backgroundColor": "#a5d8ff", ...}
 ```
+
+---
+
+## Rounded Corners (`roundness`)
+
+Add `"roundness": {"type": 3}` to rectangle and ellipse elements for rounded corners.
+
+```json
+{"type": "rectangle", "roundness": {"type": 3}, ...}
+```
+
+Omit `roundness` (or set to `null`) for sharp corners.
 
 ---
 
@@ -196,16 +234,18 @@ Use `"label": {"text": "HTTP"}` — keep to 1–2 words. Long labels overlap sha
 7. **No labels** — every shape and meaningful arrow needs descriptive text
 8. **Flat layouts** — use background zones/groups to show hierarchy
 9. **Side panels overlapping main diagram** — place at x < 0 or x > mainRight + 80
-10. **Unchecked arrow crossings** — route with waypoints if arrows would cross elements
+10. **Unchecked arrow crossings** — use `"elbowed": true` or route with waypoints
+11. **Forgetting `fillStyle: "solid"`** — default is `"hachure"` (sketchy); always set `"fillStyle": "solid"` for clean diagrams
 
 ---
 
 ## Pre-Drawing Checklist
 
 Before writing any JSON:
-- [ ] Plan coordinate grid on paper (tiers, x-positions, spacing)
-- [ ] Calculate shape widths: `max(160, textLength * 9)`
+- [ ] Plan coordinate grid (tiers, x-positions, spacing)
+- [ ] Calculate shape widths: `max(160, charCount * 11 + 40)`
 - [ ] Assign IDs to all shapes that arrows will reference
 - [ ] Choose 2–3 fill colors for semantic grouping
+- [ ] Add `"fillStyle": "solid"` to every shape for a clean look
 - [ ] Decide flow direction (vertical or horizontal)
-- [ ] Run `excalidraw guide` for quick color reference
+- [ ] Run `excalidraw guide` for quick color/sizing reference
