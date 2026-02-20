@@ -53,6 +53,6 @@ ENV ENABLE_CANVAS_SYNC=true
 CMD ["node", "dist/index.js"]
 
 # Labels for metadata
-LABEL org.opencontainers.image.source="https://github.com/yctimlin/mcp_excalidraw"
-LABEL org.opencontainers.image.description="MCP Excalidraw Server - Model Context Protocol for AI agents"
+LABEL org.opencontainers.image.source="https://github.com/opencoredev/excalidraw-cli"
+LABEL org.opencontainers.image.description="Excalidraw CLI - Control a live Excalidraw canvas from AI agents"
 LABEL org.opencontainers.image.licenses="MIT"

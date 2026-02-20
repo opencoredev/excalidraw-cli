@@ -5,22 +5,85 @@
 
 Control a live Excalidraw canvas from AI agents using a plain CLI and a loadable agent skill.
 
-## Install
+---
+
+## Setup
+
+Two things to get running: the **canvas server** (the thing you draw on) and the **CLI** (the thing that controls it).
+
+### 1. Start the canvas server
+
+**With Docker** (no build step, works anywhere):
+
+```bash
+docker run -d -p 3000:3000 --name excalidraw ghcr.io/opencoredev/excalidraw-cli-canvas:latest
+```
+
+> **Don't have Docker?** Install [Docker Desktop](https://docs.docker.com/get-docker/) — free for personal use on Mac, Windows, and Linux.
+
+**Without Docker** (requires Bun, runs directly):
+
+```bash
+bunx --bun github:opencoredev/excalidraw-cli serve
+```
+
+> **Don't have Bun?**
+> ```bash
+> curl -fsSL https://bun.sh/install | bash
+> ```
+> Open a new terminal after installing, then re-run.
+
+### 2. Install the CLI
 
 ```bash
 bun add -g github:opencoredev/excalidraw-cli
 ```
 
+### 3. Verify
+
+```bash
+excalidraw status
+# → {"status":"healthy","elements_count":0}
+```
+
+Open **http://localhost:3000** in your browser to see the canvas.
+
+---
+
 ## Quick Start
 
 ```bash
-# start the canvas server
-excalidraw serve
-
-# open http://localhost:3000 in your browser, then:
-excalidraw status
 excalidraw create --type rectangle --x 100 --y 100 --width 160 --height 60 --text "Hello"
+excalidraw viewport --fit
+excalidraw screenshot --out hello.png
 ```
+
+---
+
+## Managing the Canvas Server
+
+```bash
+# Stop
+docker stop excalidraw
+
+# Restart after a reboot
+docker start excalidraw
+
+# View logs
+docker logs -f excalidraw
+
+# Remove
+docker rm -f excalidraw
+```
+
+**Point the CLI at a non-default server:**
+
+```bash
+export EXCALIDRAW_URL=http://myserver:3000
+excalidraw status
+```
+
+---
 
 ## Agent Skills
 
@@ -163,29 +226,17 @@ excalidraw guide                      # Print design guide as JSON
 
 ---
 
-## Agent Skills
+## Docker Compose
 
-| Skill | Install | What it does |
-|-------|---------|--------------|
-| `excalidraw` | `bunx skills add opencoredev/excalidraw-cli` | CLI workflow guide, command reference, diagram patterns |
-| `excalidraw-design-guide` | `bunx skills add opencoredev/excalidraw-cli/excalidraw-design-guide` | Color palettes, sizing, anti-patterns, templates |
-
-Skills live in [`skills/`](skills/) — plain markdown, installable via [skills.sh](https://skills.sh).
-
----
-
-## Docker
-
-Run the canvas server in Docker:
+For a persistent, auto-restart setup (canvas survives reboots):
 
 ```bash
-docker-compose up -d
+docker compose up -d      # start in background
+docker compose down       # stop
+docker compose logs -f    # stream logs
 ```
 
-Then point the CLI at it:
-```bash
-EXCALIDRAW_URL=http://localhost:3000 excalidraw status
-```
+`docker-compose.yml` is included in the repo and pulls the prebuilt image from GHCR — no build step required.
 
 ---
 
