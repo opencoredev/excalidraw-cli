@@ -1,58 +1,18 @@
-# Dockerfile for MCP Excalidraw Server
-# This builds the MCP server only (core product for CI/CD and GHCR)
-# The canvas server is optional and runs separately
-
-# Stage 1: Build backend (TypeScript compilation)
-FROM node:18-slim AS builder
+FROM oven/bun:1-slim AS production
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile --production
 
-# Install all dependencies (including TypeScript compiler)
-RUN npm ci && npm cache clean --force
-
-# Copy backend source
 COPY src ./src
 COPY tsconfig.json ./
 
-# Compile TypeScript
-RUN npm run build:server
-
-# Stage 2: Production MCP Server
-FROM node:18-slim AS production
-
-# Create non-root user for security
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 --gid 1001 nodejs
-
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install only production dependencies
-RUN npm ci --only=production && npm cache clean --force
-
-# Copy compiled backend (MCP server only)
-COPY --from=builder /app/dist ./dist
-
-# Set ownership to nodejs user
-RUN chown -R nodejs:nodejs /app
-
-# Switch to non-root user
-USER nodejs
-
-# Set environment variables with defaults
 ENV NODE_ENV=production
-ENV EXPRESS_SERVER_URL=http://localhost:3000
-ENV ENABLE_CANVAS_SYNC=true
+ENV EXCALIDRAW_URL=http://localhost:3000
 
-# Run MCP server (stdin/stdout protocol)
-CMD ["node", "dist/index.js"]
+CMD ["bun", "src/server.ts"]
 
-# Labels for metadata
 LABEL org.opencontainers.image.source="https://github.com/opencoredev/excalidraw-cli"
 LABEL org.opencontainers.image.description="Excalidraw CLI - Control a live Excalidraw canvas from AI agents"
 LABEL org.opencontainers.image.licenses="MIT"
