@@ -90,8 +90,8 @@ excalidraw status
 | Skill | What it's for |
 |-------|--------------|
 | `excalidraw` | CLI commands, how to use the canvas |
-| `excalidraw-design-guide` | Colors, sizing, layout, anti-patterns |
-| `excalidraw-workflow` | Planning, element-by-element drawing, review |
+| `excalidraw-design-guide` | Colors, sizing, layout, anti-patterns, mindmap radial template |
+| `excalidraw-workflow` | Planning, element-by-element drawing, autonomous completion loop, review + quality gates |
 
 Install all three:
 
@@ -114,6 +114,8 @@ bunx skills update
 ```
 
 Skills are plain markdown files in [`skills/`](skills/) — loaded by your agent on demand, zero overhead when not in use.
+
+For multi-element diagrams (especially mindmaps), load all three skills together; otherwise execution and QA guarantees are incomplete.
 
 ---
 

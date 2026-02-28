@@ -1,6 +1,6 @@
 ---
 name: excalidraw
-description: Control a live Excalidraw canvas via the `excalidraw` CLI. Use when an agent needs to (1) draw or lay out diagrams on a live canvas, (2) create/update/delete individual elements, (3) batch-create complex diagrams from JSON, (4) inspect the canvas with describe or screenshot, (5) export/import .excalidraw files, PNG, or SVG, (6) save/restore canvas snapshots, (7) align, distribute, group, lock, or duplicate elements, (8) convert Mermaid diagrams to Excalidraw elements, (9) share diagrams as encrypted excalidraw.com URLs. Requires a running canvas server (default http://localhost:3000).
+description: Control a live Excalidraw canvas via the `excalidraw` CLI. Use when an agent needs to (1) draw or lay out diagrams on a live canvas, (2) create/update/delete individual elements, (3) batch-create complex diagrams from JSON, (4) inspect the canvas with describe or screenshot, (5) export/import .excalidraw files, PNG, or SVG, (6) save/restore canvas snapshots, (7) align, distribute, group, lock, or duplicate elements, (8) convert Mermaid diagrams to Excalidraw elements, (9) share diagrams as encrypted excalidraw.com URLs, and (10) execute tasks continuously through verified increments until complete. Requires a running canvas server (default http://localhost:3000).
 ---
 
 # Excalidraw Skill
@@ -9,7 +9,8 @@ description: Control a live Excalidraw canvas via the `excalidraw` CLI. Use when
 
 ### Load companion skills when needed
 - **Drawing or styling a diagram** → load `excalidraw-design-guide` (colors, sizing, anti-patterns)
-- **Building a multi-element diagram or reviewing one** → load `excalidraw-workflow` (planning, progressive drawing, review checklist)
+- **Building a multi-element diagram or reviewing one** → must load `excalidraw-workflow` (planning, progressive drawing, review checklist)
+- **Mindmap or quality-sensitive visual request** → must load both `excalidraw-workflow` and `excalidraw-design-guide`
 - **Just checking status, exporting, or a single command** → no companion skills needed
 
 ### Check if canvas is running
@@ -21,6 +22,13 @@ Returns `{"status":"healthy","timestamp":"...","elements_count":N,"websocket_cli
 ### Start canvas if not running
 ```bash
 excalidraw serve --port 3000
+```
+
+For autonomous multi-step runs, avoid foreground blocking. Use a detached startup and then verify health:
+
+```bash
+nohup excalidraw serve --port 3000 >/tmp/excalidraw-serve.log 2>&1 &
+excalidraw status
 ```
 
 > **Browser required for**: `viewport`, `screenshot`, and `mermaid` commands.
@@ -37,6 +45,32 @@ bun add -g github:opencoredev/excalidraw-cli
 export EXCALIDRAW_URL=http://localhost:3000
 ```
 All commands respect `EXCALIDRAW_URL`. Override per-command with `--url <url>`.
+
+---
+
+## Execution Contract (Continuous Delivery)
+
+When a request implies implementation (not just explanation), run this default loop:
+
+1. Start with a minimal working step that produces visible output fast.
+2. Expand in small increments, validating each increment before moving on.
+3. Keep going without stopping between increments unless blocked by missing credentials or irreversible risk.
+4. Before finishing, run one end-to-end verification sweep (`describe`, fit viewport, screenshot).
+
+**No pause rule:** do not stop after a single successful command if there are still unfinished checkpoints.
+
+**Failure handling:** treat errors as fix-and-continue, not stop-and-wait.
+- If `503 No frontend client connected`, open canvas and retry the failed step.
+- If a command depends on IDs, run `excalidraw describe`, repair IDs/ordering, retry.
+- If `batch` or `mermaid` receives no input, provide file or stdin explicitly and continue.
+
+If the user asks to "ship" or requests commit/push behavior:
+
+- Stage only relevant files.
+- Commit each verified unit with clear intent-focused messages.
+- Push after final verification.
+
+**Progress contract:** after each checkpoint, report what changed and run the next checkpoint immediately.
 
 ---
 
@@ -60,6 +94,21 @@ excalidraw viewport --fit
 **Rule**: your first tool call must be a draw command. Do not reason through the whole diagram before starting.
 
 **`excalidraw batch` is best for** complete diagrams where all elements and their arrows are defined together — arrow bindings are computed across the whole set at once, which gives better geometry. For live incremental drawing, use individual `create` calls.
+
+### Mindmap Quality Mode (use for any mindmap request unless user explicitly asks for rough/freeform brainstorming)
+
+Mandatory constraints:
+1. One center node with 5 primary branches in distinct directions.
+2. Each primary branch has one continuation node in the same direction.
+3. All branch labels must be inside nodes (`label.text`), never detached text elements.
+4. Use only bound arrows (`--start` / `--end`), no raw coordinate links.
+5. Run visual QA and fix until branches look balanced and readable.
+
+Quick QA checks (must pass before done):
+- Center appears central to all first-level branches.
+- Branches are directionally distinct (up/right/down-right/down-left/left or equivalent spread).
+- No floating text and no overlapping nodes.
+- `excalidraw describe` shows expected node count and branch connectivity.
 
 ---
 

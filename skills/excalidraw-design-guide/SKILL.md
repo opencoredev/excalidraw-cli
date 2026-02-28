@@ -1,6 +1,6 @@
 ---
 name: excalidraw-design-guide
-description: Load when drawing any Excalidraw diagram. Provides color palette (hex codes), sizing formulas to prevent text truncation, spacing rules to prevent overlaps, arrow styles, layout patterns, and diagram templates for architecture, flowchart, and ER diagrams. Use when asked to draw, visualize, diagram, or create any chart.
+description: Load when drawing any Excalidraw diagram. Provides color palette (hex codes), sizing formulas to prevent text truncation, spacing rules to prevent overlaps, arrow styles, layout patterns, and diagram templates for architecture, flowchart, mindmap, and ER diagrams. Use when asked to draw, visualize, diagram, or create any chart.
 ---
 
 # Excalidraw Diagram Design Guide
@@ -221,6 +221,77 @@ Omit `roundness` (or set to `null`) for sharp corners.
 }
 ```
 
+### Mindmap (Clean Radial, 5 Branches)
+Use this when a user asks for a minimal mindmap with directional branches.
+
+Rules:
+- Keep one center node and place first-level branches radially around it (not in a loose grid).
+- Keep all labels inside shape text; never leave branch words floating outside boxes.
+- Use bound arrows with `start`/`end` IDs only.
+- Keep branch lengths similar unless direction intentionally emphasizes a topic.
+
+Reference coordinates (centered canvas):
+- Center: `(560, 320)`
+- Branch vectors: up `(0,-180)`, right `(240,-40)`, down-right `(220,190)`, down-left `(-220,190)`, left `(-240,-40)`
+- Child vectors from each branch: continue same direction by 160-220px.
+
+Coordinate note:
+- Element `x`/`y` values are top-left anchors; evaluate radial balance using node centers, not top-left corners.
+
+```json
+{
+  "elements": [
+    {"id":"center","type":"ellipse","x":560,"y":320,"width":220,"height":100,
+     "strokeColor":"#374151","backgroundColor":"#f3f4f6","fillStyle":"solid","roundness":{"type":3},
+     "label":{"text":"Focus Topic"}},
+
+    {"id":"b1","type":"rectangle","x":560,"y":140,"width":190,"height":60,
+     "strokeColor":"#1f2937","backgroundColor":"#ffffff","fillStyle":"solid","roundness":{"type":3},
+     "label":{"text":"Branch 1"}},
+    {"id":"b2","type":"rectangle","x":800,"y":280,"width":190,"height":60,
+     "strokeColor":"#1f2937","backgroundColor":"#ffffff","fillStyle":"solid","roundness":{"type":3},
+     "label":{"text":"Branch 2"}},
+    {"id":"b3","type":"rectangle","x":780,"y":510,"width":190,"height":60,
+     "strokeColor":"#1f2937","backgroundColor":"#ffffff","fillStyle":"solid","roundness":{"type":3},
+     "label":{"text":"Branch 3"}},
+    {"id":"b4","type":"rectangle","x":340,"y":510,"width":190,"height":60,
+     "strokeColor":"#1f2937","backgroundColor":"#ffffff","fillStyle":"solid","roundness":{"type":3},
+     "label":{"text":"Branch 4"}},
+    {"id":"b5","type":"rectangle","x":320,"y":280,"width":190,"height":60,
+     "strokeColor":"#1f2937","backgroundColor":"#ffffff","fillStyle":"solid","roundness":{"type":3},
+     "label":{"text":"Branch 5"}},
+
+    {"id":"c1","type":"rectangle","x":560,"y":-30,"width":180,"height":52,
+     "strokeColor":"#6b7280","backgroundColor":"#ffffff","fillStyle":"solid","roundness":{"type":3},
+     "label":{"text":"Detail 1"}},
+    {"id":"c2","type":"rectangle","x":1060,"y":240,"width":180,"height":52,
+     "strokeColor":"#6b7280","backgroundColor":"#ffffff","fillStyle":"solid","roundness":{"type":3},
+     "label":{"text":"Detail 2"}},
+    {"id":"c3","type":"rectangle","x":1030,"y":640,"width":180,"height":52,
+     "strokeColor":"#6b7280","backgroundColor":"#ffffff","fillStyle":"solid","roundness":{"type":3},
+     "label":{"text":"Detail 3"}},
+    {"id":"c4","type":"rectangle","x":100,"y":640,"width":180,"height":52,
+     "strokeColor":"#6b7280","backgroundColor":"#ffffff","fillStyle":"solid","roundness":{"type":3},
+     "label":{"text":"Detail 4"}},
+    {"id":"c5","type":"rectangle","x":40,"y":240,"width":180,"height":52,
+     "strokeColor":"#6b7280","backgroundColor":"#ffffff","fillStyle":"solid","roundness":{"type":3},
+     "label":{"text":"Detail 5"}},
+
+    {"type":"arrow","x":0,"y":0,"start":{"id":"center"},"end":{"id":"b1"},"strokeColor":"#9ca3af","endArrowhead":"arrow"},
+    {"type":"arrow","x":0,"y":0,"start":{"id":"center"},"end":{"id":"b2"},"strokeColor":"#9ca3af","endArrowhead":"arrow"},
+    {"type":"arrow","x":0,"y":0,"start":{"id":"center"},"end":{"id":"b3"},"strokeColor":"#9ca3af","endArrowhead":"arrow"},
+    {"type":"arrow","x":0,"y":0,"start":{"id":"center"},"end":{"id":"b4"},"strokeColor":"#9ca3af","endArrowhead":"arrow"},
+    {"type":"arrow","x":0,"y":0,"start":{"id":"center"},"end":{"id":"b5"},"strokeColor":"#9ca3af","endArrowhead":"arrow"},
+
+    {"type":"arrow","x":0,"y":0,"start":{"id":"b1"},"end":{"id":"c1"},"strokeColor":"#9ca3af","endArrowhead":"arrow"},
+    {"type":"arrow","x":0,"y":0,"start":{"id":"b2"},"end":{"id":"c2"},"strokeColor":"#9ca3af","endArrowhead":"arrow"},
+    {"type":"arrow","x":0,"y":0,"start":{"id":"b3"},"end":{"id":"c3"},"strokeColor":"#9ca3af","endArrowhead":"arrow"},
+    {"type":"arrow","x":0,"y":0,"start":{"id":"b4"},"end":{"id":"c4"},"strokeColor":"#9ca3af","endArrowhead":"arrow"},
+    {"type":"arrow","x":0,"y":0,"start":{"id":"b5"},"end":{"id":"c5"},"strokeColor":"#9ca3af","endArrowhead":"arrow"}
+  ]
+}
+```
+
 ---
 
 ## Anti-Patterns to Avoid
@@ -236,6 +307,8 @@ Omit `roundness` (or set to `null`) for sharp corners.
 9. **Side panels overlapping main diagram** — place at x < 0 or x > mainRight + 80
 10. **Unchecked arrow crossings** — use `"elbowed": true` or route with waypoints
 11. **Forgetting `fillStyle: "solid"`** — default is `"hachure"` (sketchy); always set `"fillStyle": "solid"` for clean diagrams
+12. **Mindmap drift** — avoid random placement; use radial vectors from center and continue each branch in the same direction
+13. **Detached labels** — if text appears outside a node, fix node label and remove loose text elements
 
 ---
 

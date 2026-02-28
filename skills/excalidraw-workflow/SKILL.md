@@ -1,9 +1,37 @@
 ---
 name: excalidraw-workflow
-description: Load when building or reviewing an Excalidraw diagram. Covers quick planning before drawing, element-by-element build order so the user sees live progress, and a review checklist to catch overlaps, truncated text, and unconnected arrows before finishing.
+description: Load when building or reviewing an Excalidraw diagram. Adds an autonomous completion loop (no mid-task stops), quick planning before drawing, element-by-element build order for live progress, and a review checklist that catches overlaps, truncated text, and unconnected arrows before finishing.
 ---
 
 # Excalidraw Workflow
+
+## 0. Autonomous Completion Loop (No Mid-Task Stops)
+
+Use this loop whenever the request is to build, improve, or fix anything substantial.
+
+1. Capture the target outcome in 2-5 concrete checkpoints.
+2. Execute one checkpoint immediately (do not pause after planning).
+3. Prove the checkpoint with evidence (for diagrams: `describe` + viewport/screenshot spot-check).
+4. Fix any issue before starting the next checkpoint.
+5. Continue until all checkpoints are complete, then do one final verification pass.
+
+**Default behavior:** do the work continuously. Do not stop between checkpoints for routine permission requests.
+
+**No confirmation pauses:**
+- Do not pause after "plan" to ask routine permission.
+- Do not pause after one command output when more checkpoints remain.
+- Ask only when truly blocked by missing credentials/secrets or irreversible production risk.
+
+**When working in a git repo and the user asks to ship:**
+- After each verified checkpoint, stage and commit with a focused message.
+- Push after the final verification pass (or at each checkpoint if the user requested incremental pushes).
+
+**Checkpoint proof standard (each checkpoint must include all):**
+1. Action performed.
+2. Observable evidence (`describe`, screenshot, command output).
+3. Next checkpoint started immediately.
+
+---
 
 ## 1. Quick Grid Plan (30 seconds, saves minutes)
 
@@ -18,7 +46,7 @@ Tier 4 (y=480):  Data stores                (x=80, 320, 560 ...)
 ```
 Rule of thumb: 140px vertical between tiers, 240px horizontal between columns.
 
-**For mind maps / brainstorming**: start with the center node, then radiate. Plan nothing — the structure emerges as you draw.
+**For mind maps / brainstorming**: start with the center node, assign fixed radial slots (center -> branches -> children), then draw incrementally.
 
 **Only one thing to decide before drawing**: what is the first element and where does it go? Draw it immediately.
 
@@ -56,6 +84,14 @@ excalidraw viewport --fit
 >
 > **`excalidraw batch` is best** when you have a complete diagram ready — arrow bindings are computed across the whole set at once, giving better geometry. For live incremental drawing, use individual `create` calls.
 
+### Mindmap-specific build rule (for clean radial maps)
+If the request is "mindmap" and the branch count is known in advance, prefer:
+1. Build nodes first with fixed radial coordinates (center -> branches -> branch children).
+2. Add all arrows only after all node IDs exist.
+3. Run `viewport --fit` and visual QA before calling done.
+
+This prevents the scattered-node look caused by improvising positions mid-build.
+
 ---
 
 ## 3. Fix As You Go — Don't Save It For the End
@@ -77,7 +113,7 @@ excalidraw viewport --fit
 
 **Overlapping elements?** Use `excalidraw distribute` to space them evenly.
 
-Only run `excalidraw describe` if you think something got lost or an ID is wrong — not after every element.
+Run `excalidraw describe` at each checkpoint boundary (not after every element) to verify IDs and branch connectivity.
 
 ---
 
@@ -102,6 +138,14 @@ Visual check — look for:
 - [ ] No overlapping shapes
 - [ ] Arrow lines don't pass through boxes
 - [ ] Consistent color/sizing within each tier
+
+Mindmap-specific check (if applicable):
+- [ ] Center node is visually central
+- [ ] First-level branches radiate in distinct directions
+- [ ] Each branch has continuation depth (at least one child)
+- [ ] No floating labels outside node bounds
+- [ ] Branch spacing is balanced (no one side collapsed)
+- [ ] First-level branch center distances are within about 80px of each other unless intentional emphasis is stated
 
 **Save before stopping:**
 ```bash
